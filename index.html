@@ -92,8 +92,14 @@
             // Update the hidden input field with the selected CalendarId
             document.getElementById('CalendarId').value = calendarType;
 
+            // $.ajax({
+            //     url: url,
+            // Example using a public CORS proxy
+            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+            const targetUrl = 'https://appointment.bmeia.gv.at/?fromSpecificInfo=True';
+            
             $.ajax({
-                url: url,
+                url: proxyUrl + targetUrl,
                 method: 'POST',
                 data: params,
                 contentType: 'application/x-www-form-urlencoded',
