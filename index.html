@@ -18,6 +18,19 @@
 </head>
 
 <body>
+
+    <form action="https://appointment.bmeia.gv.at/HomeWeb/Scheduler" method="POST">
+        <input type="hidden" name="Language" value="en">
+        <input type="hidden" name="Office" value="TEHERAN">
+        <input type="hidden" name="CalendarId" value="23134510">
+        <input type="hidden" name="PersonCount" value="1">
+        <!-- <input type="hidden" name="Monday" value="3/3/2025 12:00:00 AM"> -->
+        <input type="datetime-local" name="Start" value="3/3/2025 12:15:00 PM">
+        <input type="hidden" name="Command" value="Next">
+        <button type="submit">Get Appointment</button>
+    </form>
+
+    
     <form action="https://appointment.bmeia.gv.at/?fromSpecificInfo=True" method="post" target="_blank">
         <input type="hidden" id="Language" name="Language" value="">
         <input type="hidden" id="Office" name="Office" value="TEHERAN">
