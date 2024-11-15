@@ -28,7 +28,7 @@
 
     <div class="centered">
             
-        <form action="https://appointment.bmeia.gv.at/HomeWeb/Scheduler" method="POST">
+        <form action="https://appointment.bmeia.gv.at/HomeWeb/Scheduler" method="POST"  target="_blank">
             <input type="hidden" name="Language" value="en">
             <input type="hidden" name="Office" value="TEHERAN">
             <input type="hidden" name="CalendarId" value="23134510">
@@ -41,7 +41,7 @@
 
         <br>
         
-        <form action="https://appointment.bmeia.gv.at/?fromSpecificInfo=True" method="post" target="_blank">
+        <form id="secondForm" action="https://appointment.bmeia.gv.at/?fromSpecificInfo=True" method="post" target="_blank">
             <input type="hidden" id="Language" name="Language" value="">
             <input type="hidden" id="Office" name="Office" value="TEHERAN">
             <div>
@@ -110,7 +110,7 @@
                         displayMessage(`Error found at ${getCurrentDateTime()}: ${errorElement.textContent}`, 'error');
                     } else {
                         // Trigger form submission and play alarm sound
-                        $('form button').trigger('click');
+                        $('#secondForm button').trigger('click');
                         playAlarm();
                         console.log('Form submitted at ' + getCurrentDateTime());
                         displayMessage(`Form submitted at ${getCurrentDateTime()}`, 'success');
