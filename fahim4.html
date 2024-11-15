@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fahim's Robot</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <style>
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="https://appointment.bmeia.gv.at/?fromSpecificInfo=True" method="post" target="_blank">
+        <input type="hidden" id="Language" name="Language" value="">
+        <input type="hidden" id="Office" name="Office" value="TEHERAN">
+        <div>
+            <input type="radio" id="bastegan" name="calendarType" value="13713939">
+            <label for="bastegan">Bastegan</label>
+            <input type="radio" id="pupils" name="calendarType" value="23134510" checked>
+            <label for="pupils">Pupils</label>
+        </div>
+        <input type="hidden" id="CalendarId" name="CalendarId">
+        <input type="hidden" id="PersonCount" name="PersonCount" value="1">
+        <input type="hidden" id="Command" name="Command" value="Next">
+        <button type="submit" id="manualCheck">Manual Check</button>
+    </form>
+
+    <button id="startButton">Start Automation</button>
+    <audio id="alarmSound" src="alarm.mp3"></audio>
+    <h5 id="messageDisplay"></h5>
+
+    <script>
+
+        function playAlarm() {
+            document.getElementById("alarmSound").play().catch(error => {
+                console.error('Playback was prevented:', error);
+                // Show a message or handle the error
+            });
+        }
+
+        function getCurrentDateTime() {
+            return new Date().toLocaleString();
+        }
+
+        // Function to send the POST request
+        function sendRequest() {
+            const url = 'https://appointment.bmeia.gv.at/?fromSpecificInfo=True';
+            const calendarType = document.querySelector('input[name="calendarType"]:checked').value;
+            const params = {
+                Language: 'en',
+                Office: 'TEHERAN',
+                CalendarId: calendarType,
+                PersonCount: '1',
+                Command: 'Next'
+            };
+
+            // Update the hidden input field with the selected CalendarId
+            document.getElementById('CalendarId').value = calendarType;
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: params,
+                contentType: 'application/x-www-form-urlencoded',
+                success: function (htmlResponse) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlResponse, 'text/html');
+
+                    // Check if the HTML contains a p element with 'message-error' class
+                    const errorElement = doc.querySelector('p.message-error');
+
+                    if (errorElement) {
+                        // Perform action if error element exists
+                        console.log('Error found at ' + getCurrentDateTime() + ':', errorElement.textContent);
+                        displayMessage(`Error found at ${getCurrentDateTime()}: ${errorElement.textContent}`, 'error');
+                    } else {
+                        // Trigger form submission and play alarm sound
+                        $('form button').trigger('click');
+                        playAlarm();
+                        console.log('Form submitted at ' + getCurrentDateTime());
+                        displayMessage(`Form submitted at ${getCurrentDateTime()}`, 'success');
+                    }
+                },
+                error: function (xhr, status, errorThrown) {
+                    console.error('Error sending request:', errorThrown);
+                    displayMessage(`Error sending request: ${errorThrown}`, 'error');
+                }
+            });
+        }
+
+        // Function to display messages in the h5 tag
+        let messageHistory = [];
+        function displayMessage(message, type) {
+            messageHistory.push({ message, type });
+            if (messageHistory.length > 3) {
+                messageHistory.shift();
+            }
+            updateMessageDisplay();
+        }
+
+        function updateMessageDisplay() {
+            const messageDisplay = document.getElementById('messageDisplay');
+            messageDisplay.innerHTML = '';
+            messageHistory.forEach(({ message, type }) => {
+                const span = document.createElement('span');
+                span.textContent = message;
+                span.classList.add(type);
+                messageDisplay.appendChild(span);
+                messageDisplay.appendChild(document.createElement('br'));
+            });
+        }
+
+        // Update CalendarId before manual form submission
+        document.getElementById('manualCheck').addEventListener('click', function (e) {
+            const calendarType = document.querySelector('input[name="calendarType"]:checked').value;
+            document.getElementById('CalendarId').value = calendarType;
+        });
+
+        // Set interval to send the request every 5 seconds after user interaction
+        document.getElementById('startButton').addEventListener('click', function () {
+            const intervalId = setInterval(sendRequest, 5000);
+        });
+    </script>
+</body>
+
+</html>
