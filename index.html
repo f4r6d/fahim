@@ -97,6 +97,7 @@
                 method: 'POST',
                 data: params,
                 contentType: 'application/x-www-form-urlencoded',
+                crossDomain: true, // This is optional but can be useful in some cases
                 success: function (htmlResponse) {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(htmlResponse, 'text/html');
