@@ -14,56 +14,23 @@
         .success {
             color: green;
         }
-        .centered {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
     </style>
 </head>
 
 <body>
+    <form action="https://appointment.bmeia.gv.at/?fromSpecificInfo=True" method="post" target="_blank">
+        <input type="hidden" id="Language" name="Language" value="">
+        <input type="hidden" id="Office" name="Office" value="TEHERAN">
+        <input type="hidden" id="CalendarId" name="CalendarId" value="23134510">
+        <!--  13713939 for Bastegan -- 23134510  for pupils -->
+        <input type="hidden" id="PersonCount" name="PersonCount" value="1">
+        <input type="hidden" id="Command" name="Command" value="Next">
+        <button type="submit">Manual Check</button>
+    </form>
+    <button id="startButton">Start Automation</button>
+    <audio id="alarmSound" src="alarm.mp3"></audio>
+    <h5 id="messageDisplay"></h5>
 
-    <div class="centered">
-            
-        <form action="https://appointment.bmeia.gv.at/HomeWeb/Scheduler" method="POST"  target="_blank">
-            <input type="hidden" name="Language" value="en">
-            <input type="hidden" name="Office" value="TEHERAN">
-            <input type="hidden" name="CalendarId" value="23134510">
-            <input type="hidden" name="PersonCount" value="1">
-            <!-- <input type="hidden" name="Monday" value="3/3/2025 12:00:00 AM"> -->
-            <input type="datetime-local" name="Start" value="3/3/2025 12:15:00 PM">
-            <input type="hidden" name="Command" value="Next">
-            <button type="submit">Get Appointment</button>
-        </form>
-
-        <br>
-        
-        <form id="secondForm" action="https://appointment.bmeia.gv.at/?fromSpecificInfo=True" method="post" target="_blank">
-            <input type="hidden" id="Language" name="Language" value="">
-            <input type="hidden" id="Office" name="Office" value="TEHERAN">
-            <div>
-                <input type="radio" id="bastegan" name="calendarType" value="13713939">
-                <label for="bastegan">Bastegan</label>
-                <input type="radio" id="pupils" name="calendarType" value="23134510" checked>
-                <label for="pupils">Pupils</label>
-            </div>
-            <input type="hidden" id="CalendarId" name="CalendarId">
-            <input type="hidden" id="PersonCount" name="PersonCount" value="1">
-            <input type="hidden" id="Command" name="Command" value="Next">
-            <button type="submit" id="manualCheck">Manual Check</button>
-        </form>
-
-        <br>
-        
-        <button id="startButton">Start Automation</button>
-        <audio id="alarmSound" src="alarm.mp3"></audio>
-        <h5 id="messageDisplay"></h5>
-
-    </div>
-        
     <script>
 
         function playAlarm() {
@@ -80,17 +47,13 @@
         // Function to send the POST request
         function sendRequest() {
             const url = 'https://appointment.bmeia.gv.at/?fromSpecificInfo=True';
-            const calendarType = document.querySelector('input[name="calendarType"]:checked').value;
             const params = {
                 Language: 'en',
                 Office: 'TEHERAN',
-                CalendarId: calendarType,
+                CalendarId: '23134510', // 13713939 for Bastegan -- 23134510  for pupils
                 PersonCount: '1',
                 Command: 'Next'
             };
-
-            // Update the hidden input field with the selected CalendarId
-            document.getElementById('CalendarId').value = calendarType;
 
             $.ajax({
                 url: url,
@@ -110,7 +73,7 @@
                         displayMessage(`Error found at ${getCurrentDateTime()}: ${errorElement.textContent}`, 'error');
                     } else {
                         // Trigger form submission and play alarm sound
-                        $('#secondForm button').trigger('click');
+                        $('form button').trigger('click');
                         playAlarm();
                         console.log('Form submitted at ' + getCurrentDateTime());
                         displayMessage(`Form submitted at ${getCurrentDateTime()}`, 'success');
@@ -145,14 +108,8 @@
             });
         }
 
-        // Update CalendarId before manual form submission
-        document.getElementById('manualCheck').addEventListener('click', function (e) {
-            const calendarType = document.querySelector('input[name="calendarType"]:checked').value;
-            document.getElementById('CalendarId').value = calendarType;
-        });
-
         // Set interval to send the request every 5 seconds after user interaction
-        document.getElementById('startButton').addEventListener('click', function () {
+        document.getElementById('startButton').addEventListener('click', function() {
             const intervalId = setInterval(sendRequest, 5000);
         });
     </script>
